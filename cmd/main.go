@@ -3,12 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
-	desc "github.com/sadstill/chat-server/pkg/chat/v1"
+	"log"
+	"net"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"log"
-	"net"
+
+	desc "github.com/sadstill/chat-server/pkg/chat/v1"
 )
 
 const grpcPort = 50051
@@ -19,6 +21,7 @@ type server struct {
 
 func (s *server) SendMessage(ctx context.Context, in *desc.DeleteRequest) (*emptypb.Empty, error) {
 	log.Printf("Received request: %+v", in)
+	_ = ctx
 	return &emptypb.Empty{}, nil
 }
 

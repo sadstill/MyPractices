@@ -22,3 +22,9 @@ generate-chat-api-v1:
 	--go-grpc_out=pkg/chat/v1 --go-grpc_opt=paths=source_relative \
 	--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
 	api/chat/v1/chat.proto
+
+build:
+	GOOS=linux GOARCH=amd64 go build -o bin/service_linux cmd/main.go
+
+copy-binary-to-server:
+	scp -i ~/.ssh/microservice-course-deploy bin/service_linux root@95.213.248.247:
