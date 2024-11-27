@@ -19,6 +19,7 @@ type server struct {
 
 func (s *server) SendMessage(ctx context.Context, in *desc.DeleteRequest) (*emptypb.Empty, error) {
 	log.Printf("Received request: %+v", in)
+	_ = ctx
 	return &emptypb.Empty{}, nil
 }
 
