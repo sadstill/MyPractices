@@ -10,7 +10,7 @@ option go_package = "grpc/pkg/chat/v1";
 service ChatV1 {
   rpc Create(CreateRequest) returns (CreateResponse);
   rpc Delete(DeleteRequest) returns (google.protobuf.Empty);
-  rpc SendMessage(DeleteRequest) returns (google.protobuf.Empty);
+  rpc SendMessage(SendMessageRequest) returns (google.protobuf.Empty);
 }
 
 message CreateRequest {
