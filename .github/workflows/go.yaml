@@ -12,8 +12,35 @@ env:
   CONTAINER_NAME: "crud-server-container"
 
 jobs:
+  linter:
+    name: Lint
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache: false
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.61
+          args: --timeout=30m --config=./.golangci.pipeline.yaml
+
+  tests:
+    name: Run Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+      - name: Run Unit Tests
+        run: go test ./...
+
   image-build-and-push:
     runs-on: ubuntu-22.04
+    needs: [tests, linter]
 
     steps:
       - name: Checkout master
@@ -59,28 +86,3 @@ jobs:
             # Run a new container from a new image
             docker run -d -p 50051:50051 --name $CONTAINER_NAME -t $REGISTRY/$IMAGE_NAME:$TAG_NAME
 
-  linter:
-    name: lint
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.23'
-          cache: false
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: v1.61
-          args: --timeout=30m --config=./.golangci.pipeline.yaml
-
-  tests:
-    name: Run Tests
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.23'
-      - name: Run Unit Tests
-        run: go test ./...
