@@ -28,3 +28,8 @@ build:
 
 copy-binary-to-server:
 	scp -i ~/.ssh/microservice-course-deploy bin/service_linux root@95.213.248.247:
+
+docker-build-and-push:
+	docker buildx build --no-cache --platform linux/amd64 -t cr.selcloud.ru/course/chat-server:v0.0.1 .
+	docker login -u token -p CRgAAAAAKdNv7uHvhztf5eIV7HR9EeyR3ltthoNc cr.selcloud.ru/course
+	docker push cr.selcloud.ru/course/chat-server:v0.0.1
