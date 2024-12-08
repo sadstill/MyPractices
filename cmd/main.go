@@ -1,29 +1,19 @@
 package main
 
 import (
-	"context"
 	"fmt"
+	"github.com/sadstill/chat-server/internal/delivery/chat"
+	chatRepo "github.com/sadstill/chat-server/internal/repository/chat"
+	chatService "github.com/sadstill/chat-server/internal/service/chat"
 	"log"
 	"net"
 
+	desc "github.com/sadstill/chat-server/pkg/chat/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"google.golang.org/protobuf/types/known/emptypb"
-
-	desc "github.com/sadstill/chat-server/pkg/chat/v1"
 )
 
 const grpcPort = 50051
-
-type server struct {
-	desc.UnimplementedChatV1Server
-}
-
-func (s *server) SendMessage(ctx context.Context, in *desc.DeleteRequest) (*emptypb.Empty, error) {
-	log.Printf("Received request: %+v", in)
-	_ = ctx
-	return &emptypb.Empty{}, nil
-}
 
 func main() {
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
@@ -31,9 +21,12 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	chatRepository := chatRepo.NewRepository()
+	chatSrv := chatService.NewService(chatRepository)
+
 	s := grpc.NewServer()
 	reflection.Register(s)
-	desc.RegisterChatV1Server(s, &server{})
+	desc.RegisterChatV1Server(s, chat.NewImplementation(chatSrv))
 
 	log.Printf("server listening at %d", grpcPort)
 
