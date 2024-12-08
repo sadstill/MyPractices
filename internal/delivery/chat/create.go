@@ -6,5 +6,12 @@ import (
 )
 
 func (i *Implementation) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
-	uuid, err := i.
+	id, err := i.chatService.Create(ctx, req.Usernames)
+	if err != nil {
+		return nil, err
+	}
+
+	return &desc.CreateResponse{
+		ChatId: id,
+	}, nil
 }
